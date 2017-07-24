@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fission-demo
+  labels:
+    name: fission-demo
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: client-normal
+  namespace: fission-demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: client-normal
+    spec:
+      containers:
+      - name: client
+        image: yqf3139/fission-demo-client:latest
+        command: ["/client"]
+        args: ["normal"]
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: client-sleepy
+  namespace: fission-demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: client-sleepy
+    spec:
+      containers:
+      - name: client
+        image: yqf3139/fission-demo-client:latest
+        command: ["/client"]
+        args: ["sleepy"]
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: client-extreme
+  namespace: fission-demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: client-extreme
+    spec:
+      containers:
+      - name: client
+        image: yqf3139/fission-demo-client:latest
+        command: ["/client"]
+        args: ["extreme"]
