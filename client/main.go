@@ -13,11 +13,12 @@ import (
 	"mime/multipart"
 	"io"
 	"io/ioutil"
+	"runtime"
 )
 
 const (
 	//SERVER_URL = "http://cluster.me:31314"
-	SERVER_URL = "http://router.fission"
+	SERVER_URL = "http://10.128.0.2:31314"
 	SECRET     = "secret"
 )
 
@@ -42,9 +43,9 @@ func main() {
 	switch mode {
 	case "normal":
 		// report every 1 min +- 20 sec
-		go report(60, 20, token)
+		go report(40, 20, token)
 		// upload every 5 +- 2 min
-		go upload(5*60, 2*60, token)
+		go upload(4*60, 3*60, token)
 	case "sleepy":
 		// report every 20 +- 5 min
 		go report(20*60, 5*60, token)
@@ -85,6 +86,9 @@ func upload(interval, fluctuation int32, token string) {
 		return
 	}
 	for {
+		t := interval + (rand.Int31n(fluctuation)*2 - fluctuation)
+		time.Sleep(time.Duration(t) * time.Second)
+
 		filename := files[rand.Intn(len(files))].Name()
 		newpath := fmt.Sprintf("./images/%v", fmt.Sprintf("%v%v", time.Now().Unix(), filename))
 		err = os.Symlink(filename, newpath)
@@ -95,9 +99,7 @@ func upload(interval, fluctuation int32, token string) {
 			fmt.Println("upload done", err)
 		}
 		os.Remove(newpath)
-
-		t := interval + (rand.Int31n(fluctuation)*2 - fluctuation)
-		time.Sleep(time.Duration(t) * time.Second)
+		runtime.GC()
 	}
 }
 
@@ -110,7 +112,6 @@ func doPut(url, token string, body []byte) (err error) {
 	if err != nil {
 		return
 	}
-	response.Body.Close()
 	if response.StatusCode != http.StatusOK {
 		err = fmt.Errorf("bad status: %s", response.Status)
 	}
