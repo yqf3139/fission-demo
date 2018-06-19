@@ -18,7 +18,7 @@ import (
 
 const (
 	//SERVER_URL = "http://cluster.me:31314"
-	SERVER_URL = "http://10.128.0.2:31314"
+	SERVER_URL = "http://router.fission"
 	SECRET     = "secret"
 )
 
