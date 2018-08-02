@@ -1,3 +1,34 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: fission-demo-pv-volume
+  namespace: fission-demo
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/tmp/images"
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: fission-demo-pv-claim
+  namespace: fission-demo
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -10,9 +41,17 @@ spec:
       labels:
         svc: client-normal
     spec:
+      volumes:
+      - name: fission-demo-pv-storage
+        persistentVolumeClaim:
+         claimName: fission-demo-pv-claim
       containers:
       - name: client
         image: yqf3139/fission-demo-client:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: "/images"
+          name: fission-demo-pv-storage
         command: ["/client"]
         args: ["normal"]
 
@@ -29,9 +68,17 @@ spec:
       labels:
         svc: client-sleepy
     spec:
+      volumes:
+      - name: fission-demo-pv-storage
+        persistentVolumeClaim:
+         claimName: fission-demo-pv-claim
       containers:
       - name: client
         image: yqf3139/fission-demo-client:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: "/images"
+          name: fission-demo-pv-storage
         command: ["/client"]
         args: ["sleepy"]
 
@@ -48,8 +95,16 @@ spec:
       labels:
         svc: client-extreme
     spec:
+      volumes:
+      - name: fission-demo-pv-storage
+        persistentVolumeClaim:
+         claimName: fission-demo-pv-claim
       containers:
       - name: client
         image: yqf3139/fission-demo-client:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: "/images"
+          name: fission-demo-pv-storage
         command: ["/client"]
         args: ["extreme"]

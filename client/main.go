@@ -80,18 +80,22 @@ func report(interval, fluctuation int32, token string) {
 
 func upload(interval, fluctuation int32, token string) {
 	url := fmt.Sprintf("%v/api/images", SERVER_URL)
-	files, err := ioutil.ReadDir("./images")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	for {
+		files, err := ioutil.ReadDir("/images")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if len(files) == 0 {
+			fmt.Println("images folder is empty")
+			return
+		}
 		t := interval + (rand.Int31n(fluctuation)*2 - fluctuation)
 		time.Sleep(time.Duration(t) * time.Second)
 
 		filename := files[rand.Intn(len(files))].Name()
-		newpath := fmt.Sprintf("./images/%v", fmt.Sprintf("%v%v", time.Now().Unix(), filename))
-		err = os.Symlink(filename, newpath)
+		newpath := fmt.Sprintf("./%v", fmt.Sprintf("%v%v", time.Now().Unix(), filename))
+		err = os.Rename("/images/" + filename, newpath)
 		if err != nil {
 			fmt.Println(err)
 		} else {
