@@ -10,7 +10,7 @@ def main():
     category = 'cat'
     name = 'none'
     try:
-        payload = json.loads(body)
+        payload = json.loads(body)['payload']
         m = re.search(r'-(\w+)-', payload['Key'])
         name = payload['Key'].split('/')[1]
         current_app.logger.info(payload["Key"])

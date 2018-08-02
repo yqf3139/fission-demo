@@ -78,9 +78,28 @@ func report(interval, fluctuation int32, token string) {
 	}
 }
 
+func copy(src string, dst string) bool {
+	// Read all content of src to data
+	data, err := ioutil.ReadFile(src)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	// Write data to dst
+	err = ioutil.WriteFile(dst, data, 0644)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
+}
+
 func upload(interval, fluctuation int32, token string) {
 	url := fmt.Sprintf("%v/api/images", SERVER_URL)
 	for {
+		t := interval + (rand.Int31n(fluctuation)*2 - fluctuation)
+		time.Sleep(time.Duration(t) * time.Second)
+
 		files, err := ioutil.ReadDir("/images")
 		if err != nil {
 			fmt.Println(err)
@@ -88,17 +107,14 @@ func upload(interval, fluctuation int32, token string) {
 		}
 		if len(files) == 0 {
 			fmt.Println("images folder is empty")
-			return
+			continue
 		}
-		t := interval + (rand.Int31n(fluctuation)*2 - fluctuation)
-		time.Sleep(time.Duration(t) * time.Second)
 
 		filename := files[rand.Intn(len(files))].Name()
+		oldpath := "/images/" + filename
 		newpath := fmt.Sprintf("./%v", fmt.Sprintf("%v%v", time.Now().Unix(), filename))
-		err = os.Rename("/images/" + filename, newpath)
-		if err != nil {
-			fmt.Println(err)
-		} else {
+		if copy(oldpath, newpath) {
+			os.Remove(oldpath)
 			err = doUpload(url, token, newpath)
 			fmt.Println("upload done", err)
 		}
