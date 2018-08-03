@@ -147,9 +147,9 @@ def main():
         pass
 
     sleep(1)
-    return json.dumps({'err':'', 'payload': {
-        'category': category,
+    return json.dumps({
+        'type': category,
         'name': name,
         'possibility': possibility
-    }})
+    })
 

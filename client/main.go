@@ -43,16 +43,16 @@ func main() {
 	switch mode {
 	case "normal":
 		// report every 1 min +- 20 sec
-		go report(40, 20, token)
+		// go report(40, 20, token)
 		// upload every 5 +- 2 min
 		go upload(4*60, 3*60, token)
 	case "sleepy":
 		// report every 20 +- 5 min
-		go report(20*60, 5*60, token)
+		// go report(20*60, 5*60, token)
 		// do not upload
 	case "extreme":
 		// report every 2 second
-		go report(2, 1, token)
+		// go report(2, 1, token)
 		// upload every 20 second
 		go upload(20, 2, token)
 	}
